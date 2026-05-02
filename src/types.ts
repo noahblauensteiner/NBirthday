@@ -1,0 +1,15 @@
+export type WishType = 'gift' | 'activity' | 'party' | 'dinner'
+
+export interface Wish {
+  id: string
+  type: WishType
+  title: string
+  note?: string
+  url?: string
+}
+
+export interface Session {
+  name: string
+  wishes: Wish[]
+  editToken: string
+}
