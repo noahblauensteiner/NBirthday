@@ -13,11 +13,6 @@ const TYPE_META: Record<WishType, {
   dinner:   { emoji: '🍽️', label: 'Dinner',   badge: 'bg-orange-50 text-orange-500', fallbackBg: 'from-orange-100 to-amber-200' },
 }
 
-function getImageUrl(keyword: string, id: string): string {
-  const seed = parseInt(id.replace(/-/g, '').slice(0, 8), 16) % 10000
-  return `https://source.unsplash.com/400x400/?${encodeURIComponent(keyword)}&sig=${seed}`
-}
-
 interface WishCardProps {
   wish: Wish
   canEdit: boolean
@@ -28,7 +23,7 @@ interface WishCardProps {
 export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardProps) {
   const meta = TYPE_META[wish.type]
   const [imgFailed, setImgFailed] = useState(false)
-  const showImage = !!wish.picture && !imgFailed
+  const showImage = !!wish.imageUrl && !imgFailed
 
   return (
     <div className="group relative bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
@@ -36,7 +31,7 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
       <div className="aspect-square relative overflow-hidden flex-shrink-0">
         {showImage ? (
           <img
-            src={getImageUrl(wish.picture!, wish.id)}
+            src={wish.imageUrl}
             alt={wish.title}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"

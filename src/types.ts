@@ -7,6 +7,7 @@ export interface Wish {
   note?: string
   url?: string
   picture?: string
+  imageUrl?: string
 }
 
 export interface Session {

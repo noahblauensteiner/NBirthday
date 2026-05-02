@@ -3,6 +3,7 @@ import type { Session, Wish } from '../types'
 import WishCard from '../components/WishCard'
 import AddWishModal from '../components/AddWishModal'
 import { buildShareUrl } from '../lib/sharing'
+import { fetchWishImage } from '../lib/images'
 
 interface WishListProps {
   session: Session
@@ -16,18 +17,26 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
   const [editingWish, setEditingWish] = useState<Wish | null>(null)
   const [copied, setCopied] = useState(false)
 
-  function handleAdd(data: Omit<Wish, 'id'>) {
-    const wish: Wish = { ...data, id: crypto.randomUUID() }
+  async function handleAdd(data: Omit<Wish, 'id'>) {
+    const id = crypto.randomUUID()
+    const imageUrl = data.picture ? await fetchWishImage(data.picture, id) : undefined
+    const wish: Wish = { ...data, id, imageUrl }
     onUpdate({ ...session, wishes: [...session.wishes, wish] })
     setShowModal(false)
   }
 
-  function handleEdit(data: Omit<Wish, 'id'>) {
+  async function handleEdit(data: Omit<Wish, 'id'>) {
     if (!editingWish) return
+    const pictureChanged = data.picture !== editingWish.picture
+    const imageUrl = data.picture
+      ? pictureChanged
+        ? await fetchWishImage(data.picture, editingWish.id)
+        : editingWish.imageUrl
+      : undefined
     onUpdate({
       ...session,
       wishes: session.wishes.map(w =>
-        w.id === editingWish.id ? { ...data, id: w.id } : w,
+        w.id === editingWish.id ? { ...data, id: w.id, imageUrl } : w,
       ),
     })
     setEditingWish(null)
