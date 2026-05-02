@@ -11,5 +11,5 @@ export interface Wish {
 export interface Session {
   name: string
   wishes: Wish[]
-  editToken: string
+  passwordHash: string
 }
