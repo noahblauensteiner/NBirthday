@@ -6,6 +6,7 @@ export interface Wish {
   title: string
   note?: string
   url?: string
+  picture?: string
 }
 
 export interface Session {

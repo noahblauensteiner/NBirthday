@@ -1,11 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import type { Wish, WishType } from '../types'
 
-const TYPES: { type: WishType; emoji: string; label: string }[] = [
-  { type: 'gift',     emoji: '🎁', label: 'Gift' },
-  { type: 'activity', emoji: '🏃', label: 'Activity' },
-  { type: 'party',    emoji: '🎉', label: 'Party' },
-  { type: 'dinner',   emoji: '🍽️', label: 'Dinner' },
+const TYPES: { type: WishType; emoji: string; label: string; picturePlaceholder: string }[] = [
+  { type: 'gift',     emoji: '🎁', label: 'Gift',     picturePlaceholder: 'airpods, flowers, book…' },
+  { type: 'activity', emoji: '🏃', label: 'Activity', picturePlaceholder: 'hiking, concert, cooking…' },
+  { type: 'party',    emoji: '🎉', label: 'Party',    picturePlaceholder: 'rooftop, garden, beach…' },
+  { type: 'dinner',   emoji: '🍽️', label: 'Dinner',   picturePlaceholder: 'sushi, italian, barbecue…' },
 ]
 
 interface AddWishModalProps {
@@ -17,10 +17,10 @@ interface AddWishModalProps {
 export default function AddWishModal({ initial, onSave, onClose }: AddWishModalProps) {
   const [type, setType] = useState<WishType>(initial?.type ?? 'gift')
   const [title, setTitle] = useState(initial?.title ?? '')
+  const [picture, setPicture] = useState(initial?.picture ?? '')
   const [note, setNote] = useState(initial?.note ?? '')
   const [url, setUrl] = useState(initial?.url ?? '')
 
-  // Close on Escape
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -36,10 +36,13 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
     onSave({
       type,
       title: trimmed,
+      picture: picture.trim() || undefined,
       note: note.trim() || undefined,
       url: url.trim() || undefined,
     })
   }
+
+  const currentType = TYPES.find(t => t.type === type)!
 
   return (
     <div
@@ -47,7 +50,6 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <h2 className="text-lg font-semibold text-gray-800">
             {initial ? 'Edit wish' : 'Add a wish'}
@@ -60,7 +62,7 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
+        <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
           {/* Type selector */}
           <div className="grid grid-cols-4 gap-2">
             {TYPES.map(t => (
@@ -81,40 +83,52 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
           </div>
 
           {/* Title */}
-          <div>
+          <input
+            autoFocus
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="What do you want? *"
+            maxLength={80}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+          />
+
+          {/* Picture keyword */}
+          <div className="relative">
             <input
-              autoFocus
               type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="What do you want? *"
-              maxLength={80}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+              value={picture}
+              onChange={e => setPicture(e.target.value)}
+              placeholder={currentType.picturePlaceholder}
+              maxLength={40}
+              className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
             />
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-base pointer-events-none">
+              🖼️
+            </span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300 pointer-events-none">
+              cover image
+            </span>
           </div>
 
           {/* Note */}
-          <div>
-            <textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="Any details? (optional)"
-              maxLength={200}
-              rows={2}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none resize-none"
-            />
-          </div>
+          <textarea
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder="Any details? (optional)"
+            maxLength={200}
+            rows={2}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none resize-none"
+          />
 
           {/* URL */}
-          <div>
-            <input
-              type="url"
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder="Link (optional)"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
-            />
-          </div>
+          <input
+            type="url"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            placeholder="Link (optional)"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+          />
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">

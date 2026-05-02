@@ -81,7 +81,7 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
       </header>
 
       {/* Content */}
-      <main className="max-w-lg mx-auto px-4 py-6 pb-28">
+      <main className="max-w-2xl mx-auto px-3 py-5 pb-28">
         {session.wishes.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-20 text-center">
             <span className="text-5xl mb-4">🎈</span>
@@ -95,7 +95,7 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
             )}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {session.wishes.map(wish => (
               <WishCard
                 key={wish.id}
