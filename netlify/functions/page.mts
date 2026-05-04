@@ -1,8 +1,5 @@
 import { getStore } from '@netlify/blobs'
 import { nanoid } from 'nanoid'
-import type { Config } from '@netlify/functions'
-
-export const config: Config = { path: '/page' }
 
 interface Wish {
   id: string

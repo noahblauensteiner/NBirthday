@@ -1,7 +1,4 @@
 import { getStore } from '@netlify/blobs'
-import type { Config } from '@netlify/functions'
-
-export const config: Config = { path: '/verify' }
 
 interface PageBlob { passwordHash: string }
 
