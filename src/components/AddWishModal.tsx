@@ -17,6 +17,9 @@ interface AddWishModalProps {
 export default function AddWishModal({ initial, onSave, onClose }: AddWishModalProps) {
   const [type, setType] = useState<WishType>(initial?.type ?? 'gift')
   const [title, setTitle] = useState(initial?.title ?? '')
+  const [price, setPrice] = useState<string>(
+    initial?.price != null ? initial.price.toString() : ''
+  )
   const [picture, setPicture] = useState(initial?.picture ?? '')
   const [note, setNote] = useState(initial?.note ?? '')
   const [url, setUrl] = useState(initial?.url ?? '')
@@ -39,6 +42,7 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
       picture: picture.trim() || undefined,
       note: note.trim() || undefined,
       url: url.trim() || undefined,
+      price: type === 'gift' && price.trim() ? parseFloat(price) : undefined,
     })
   }
 
@@ -92,6 +96,24 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             maxLength={80}
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
           />
+
+          {/* Price (gift only) */}
+          {type === 'gift' && (
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none select-none">
+                €
+              </span>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={price}
+                onChange={e => setPrice(e.target.value)}
+                placeholder="Price (optional)"
+                className="w-full border border-gray-200 rounded-xl pl-8 pr-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+              />
+            </div>
+          )}
 
           {/* Picture keyword */}
           <div className="relative">

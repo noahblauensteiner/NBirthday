@@ -7,6 +7,13 @@ export interface Wish {
   note?: string
   url?: string
   picture?: string
+  price?: number
+}
+
+export interface ChipIn {
+  name: string
+  amount: number
+  createdAt: string
 }
 
 export interface Session {

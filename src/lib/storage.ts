@@ -1,4 +1,4 @@
-import type { Session } from '../types'
+import type { Session, ChipIn } from '../types'
 
 const sessionKey = (name: string) => `nbd:session:${name.toLowerCase().trim()}`
 const tokenKey = (name: string) => `nbd:token:${name.toLowerCase().trim()}`
@@ -22,4 +22,22 @@ export function getEditToken(name: string): string | null {
 
 export function saveEditToken(name: string, token: string): void {
   localStorage.setItem(tokenKey(name), token)
+}
+
+const chipInsKey = (wishId: string) => `nbd:chipins:${wishId}`
+
+export function loadChipIns(wishId: string): ChipIn[] {
+  try {
+    const raw = localStorage.getItem(chipInsKey(wishId))
+    return raw ? (JSON.parse(raw) as ChipIn[]) : []
+  } catch {
+    return []
+  }
+}
+
+export function addChipIn(wishId: string, chipIn: ChipIn): ChipIn[] {
+  const existing = loadChipIns(wishId)
+  const updated = [...existing, chipIn]
+  localStorage.setItem(chipInsKey(wishId), JSON.stringify(updated))
+  return updated
 }
