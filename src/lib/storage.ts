@@ -1,27 +1,19 @@
-import type { Session, ChipIn } from '../types'
+import type { ChipIn } from '../types'
 
-const sessionKey = (name: string) => `nbd:session:${name.toLowerCase().trim()}`
-const tokenKey = (name: string) => `nbd:token:${name.toLowerCase().trim()}`
-
-export function loadSession(name: string): Session | null {
-  try {
-    const raw = localStorage.getItem(sessionKey(name))
-    return raw ? (JSON.parse(raw) as Session) : null
-  } catch {
-    return null
-  }
+export function getOwnerToken(pageId: string): string | null {
+  return localStorage.getItem(`nbd:token:${pageId}`)
 }
 
-export function saveSession(session: Session): void {
-  localStorage.setItem(sessionKey(session.name), JSON.stringify(session))
+export function saveOwnerToken(pageId: string, hash: string): void {
+  localStorage.setItem(`nbd:token:${pageId}`, hash)
 }
 
-export function getEditToken(name: string): string | null {
-  return localStorage.getItem(tokenKey(name))
+export function getCoordToken(pageId: string): string | null {
+  return localStorage.getItem(`nbd:coord:${pageId}`)
 }
 
-export function saveEditToken(name: string, token: string): void {
-  localStorage.setItem(tokenKey(name), token)
+export function saveCoordToken(pageId: string, token: string): void {
+  localStorage.setItem(`nbd:coord:${pageId}`, token)
 }
 
 const chipInsKey = (wishId: string) => `nbd:chipins:${wishId}`

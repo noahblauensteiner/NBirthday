@@ -16,8 +16,22 @@ export interface ChipIn {
   createdAt: string
 }
 
-export interface Session {
-  name: string
-  wishes: Wish[]
-  passwordHash: string
+export interface Claim {
+  id: string
+  wishId: string
+  claimedBy: string
+  claimedAt: string
+  coordToken?: string
 }
+
+// Shape returned by GET /page (no passwordHash, no coordToken)
+export interface Page {
+  id: string
+  personName: string
+  wishes: Wish[]
+  eventDate?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type ViewMode = 'owner' | 'coordinator' | 'friend'

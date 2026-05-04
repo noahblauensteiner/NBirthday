@@ -1,55 +1,53 @@
 import { useState } from 'react'
-import type { Session, Wish } from '../types'
+import type { Page, ViewMode, Wish } from '../types'
 import WishCard from '../components/WishCard'
 import AddWishModal from '../components/AddWishModal'
 import { buildShareUrl } from '../lib/sharing'
 
 interface WishListProps {
-  session: Session
-  canEdit: boolean
-  onUpdate: (session: Session) => void
+  page: Page
+  viewMode: ViewMode
+  onUpdate: (wishes: Wish[]) => void
   onBack: () => void
 }
 
-export default function WishList({ session, canEdit, onUpdate, onBack }: WishListProps) {
+export default function WishList({ page, viewMode, onUpdate, onBack }: WishListProps) {
   const [showModal, setShowModal] = useState(false)
   const [editingWish, setEditingWish] = useState<Wish | null>(null)
   const [copied, setCopied] = useState(false)
 
+  const canEdit = viewMode === 'owner'
+
   function handleAdd(data: Omit<Wish, 'id'>) {
     const wish: Wish = { ...data, id: crypto.randomUUID() }
-    onUpdate({ ...session, wishes: [...session.wishes, wish] })
+    onUpdate([...page.wishes, wish])
     setShowModal(false)
   }
 
   function handleEdit(data: Omit<Wish, 'id'>) {
     if (!editingWish) return
-    onUpdate({
-      ...session,
-      wishes: session.wishes.map(w =>
-        w.id === editingWish.id ? { ...data, id: w.id } : w,
-      ),
-    })
+    onUpdate(
+      page.wishes.map(w => (w.id === editingWish.id ? { ...data, id: w.id } : w)),
+    )
     setEditingWish(null)
   }
 
   function handleDelete(id: string) {
-    onUpdate({ ...session, wishes: session.wishes.filter(w => w.id !== id) })
+    onUpdate(page.wishes.filter(w => w.id !== id))
   }
 
   async function handleShare() {
-    const url = buildShareUrl(session.name, session.wishes)
+    const url = buildShareUrl(page.id)
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     } catch {
-      // Fallback: prompt with URL
       prompt('Copy this link to share:', url)
     }
   }
 
-  const displayName = session.name.charAt(0).toUpperCase() + session.name.slice(1)
+  const displayName = page.personName.charAt(0).toUpperCase() + page.personName.slice(1)
 
   return (
     <div className="min-h-dvh bg-gradient-to-br from-rose-50 via-fuchsia-50 to-sky-100">
@@ -82,7 +80,7 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-3 py-5 pb-28">
-        {session.wishes.length === 0 ? (
+        {page.wishes.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-20 text-center">
             <span className="text-5xl mb-4">🎈</span>
             <p className="text-gray-500 font-medium">
@@ -96,7 +94,7 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {session.wishes.map(wish => (
+            {page.wishes.map(wish => (
               <WishCard
                 key={wish.id}
                 wish={wish}
@@ -108,8 +106,7 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
           </div>
         )}
 
-        {/* Read-only hint */}
-        {!canEdit && session.wishes.length > 0 && (
+        {!canEdit && page.wishes.length > 0 && (
           <p className="mt-8 text-center text-xs text-gray-400">
             You're viewing {displayName}'s wishes · tap a link to explore
           </p>
@@ -129,12 +126,10 @@ export default function WishList({ session, canEdit, onUpdate, onBack }: WishLis
         </div>
       )}
 
-      {/* Add modal */}
       {showModal && (
         <AddWishModal onSave={handleAdd} onClose={() => setShowModal(false)} />
       )}
 
-      {/* Edit modal */}
       {editingWish && (
         <AddWishModal
           initial={editingWish}

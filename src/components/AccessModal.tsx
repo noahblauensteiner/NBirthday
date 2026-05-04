@@ -1,33 +1,44 @@
 import { useState, type FormEvent } from 'react'
 import { hashPassword } from '../lib/crypto'
-import type { Session } from '../types'
+import { verifyPassword, ApiError } from '../lib/api'
+import type { Page } from '../types'
 
 interface AccessModalProps {
-  session: Session
-  onOwner: () => void
+  page: Page
+  onOwner: (hash: string) => void
   onFriend: () => void
 }
 
 type Step = 'choose' | 'password'
 
-export default function AccessModal({ session, onOwner, onFriend }: AccessModalProps) {
+export default function AccessModal({ page, onOwner, onFriend }: AccessModalProps) {
   const [step, setStep] = useState<Step>('choose')
   const [word, setWord] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const displayName = session.name.charAt(0).toUpperCase() + session.name.slice(1)
+  const displayName = page.personName.charAt(0).toUpperCase() + page.personName.slice(1)
 
   async function handlePasswordSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmed = word.trim()
     if (!trimmed) return
     setLoading(true)
-    const hash = await hashPassword(trimmed)
-    setLoading(false)
-    if (hash === session.passwordHash) {
-      onOwner()
-    } else {
-      setError('Not quite — but you can still see the wishes as a friend.')
+    try {
+      const hash = await hashPassword(trimmed)
+      const { valid } = await verifyPassword(page.id, hash)
+      setLoading(false)
+      if (valid) {
+        onOwner(hash)
+      } else {
+        setError('Not quite — but you can still see the wishes as a friend.')
+      }
+    } catch (err) {
+      setLoading(false)
+      if (err instanceof ApiError && err.status === 404) {
+        setError('Page not found.')
+      } else {
+        setError('Could not verify — check your connection.')
+      }
     }
   }
 

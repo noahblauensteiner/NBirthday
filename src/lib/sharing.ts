@@ -1,5 +1,6 @@
 import type { Wish } from '../types'
 
+// Legacy encode/decode kept for backward-compat with old ?for=&w= links
 export function encodeWishes(wishes: Wish[]): string {
   return btoa(encodeURIComponent(JSON.stringify(wishes)))
 }
@@ -12,18 +13,27 @@ export function decodeWishes(encoded: string): Wish[] | null {
   }
 }
 
-export function buildShareUrl(name: string, wishes: Wish[]): string {
-  const base = window.location.origin + window.location.pathname
-  const params = new URLSearchParams({ for: name, w: encodeWishes(wishes) })
-  return `${base}?${params.toString()}`
+export function buildShareUrl(pageId: string): string {
+  return `${window.location.origin}${window.location.pathname}?p=${pageId}`
 }
 
-export function parseShareUrl(): { name: string; wishes: Wish[] } | null {
+export type ParsedUrl =
+  | { type: 'pageId'; pageId: string }
+  | { type: 'legacy'; name: string; wishes: Wish[] }
+  | null
+
+export function parseUrl(): ParsedUrl {
   const params = new URLSearchParams(window.location.search)
+
+  const p = params.get('p')
+  if (p) return { type: 'pageId', pageId: p }
+
   const name = params.get('for')
   const w = params.get('w')
-  if (!name || !w) return null
-  const wishes = decodeWishes(w)
-  if (!wishes) return null
-  return { name, wishes }
+  if (name && w) {
+    const wishes = decodeWishes(w)
+    if (wishes) return { type: 'legacy', name, wishes }
+  }
+
+  return null
 }
