@@ -15,10 +15,6 @@ const TYPE_META: Record<WishType, {
   dinner:   { emoji: '🍽️', label: 'Dinner',   badge: 'bg-orange-50 text-orange-500',  fallbackBg: 'from-orange-100 to-amber-200' },
 }
 
-function getImageUrl(keyword: string, id: string): string {
-  const seed = parseInt(id.replace(/-/g, '').slice(0, 8), 16) % 10000
-  return `https://source.unsplash.com/400x400/?${encodeURIComponent(keyword)}&sig=${seed}`
-}
 
 function fmtPrice(n: number): string {
   return `€${n % 1 === 0 ? n : n.toFixed(2)}`
@@ -58,7 +54,7 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
         <div className="aspect-square relative overflow-hidden flex-shrink-0">
           {showImage ? (
             <img
-              src={getImageUrl(wish.picture!, wish.id)}
+              src={wish.picture}
               alt={wish.title}
               loading="lazy"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"

@@ -1,11 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import type { Wish, WishType } from '../types'
 
-const TYPES: { type: WishType; emoji: string; label: string; picturePlaceholder: string }[] = [
-  { type: 'gift',     emoji: '🎁', label: 'Gift',     picturePlaceholder: 'airpods, flowers, book…' },
-  { type: 'activity', emoji: '🏃', label: 'Activity', picturePlaceholder: 'hiking, concert, cooking…' },
-  { type: 'party',    emoji: '🎉', label: 'Party',    picturePlaceholder: 'rooftop, garden, beach…' },
-  { type: 'dinner',   emoji: '🍽️', label: 'Dinner',   picturePlaceholder: 'sushi, italian, barbecue…' },
+const TYPES: { type: WishType; emoji: string; label: string }[] = [
+  { type: 'gift',     emoji: '🎁', label: 'Gift'     },
+  { type: 'activity', emoji: '🏃', label: 'Activity' },
+  { type: 'party',    emoji: '🎉', label: 'Party'    },
+  { type: 'dinner',   emoji: '🍽️', label: 'Dinner'  },
 ]
 
 interface AddWishModalProps {
@@ -45,8 +45,6 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
       price: type === 'gift' && price.trim() ? parseFloat(price) : undefined,
     })
   }
-
-  const currentType = TYPES.find(t => t.type === type)!
 
   return (
     <div
@@ -115,23 +113,14 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             </div>
           )}
 
-          {/* Picture keyword */}
-          <div className="relative">
-            <input
-              type="text"
-              value={picture}
-              onChange={e => setPicture(e.target.value)}
-              placeholder={currentType.picturePlaceholder}
-              maxLength={40}
-              className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
-            />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-base pointer-events-none">
-              🖼️
-            </span>
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300 pointer-events-none">
-              cover image
-            </span>
-          </div>
+          {/* Picture URL */}
+          <input
+            type="url"
+            value={picture}
+            onChange={e => setPicture(e.target.value)}
+            placeholder="Image URL (optional)"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+          />
 
           {/* Note */}
           <textarea
