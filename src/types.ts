@@ -35,3 +35,19 @@ export interface Page {
 }
 
 export type ViewMode = 'owner' | 'coordinator' | 'friend'
+
+export interface Finish {
+  id: string
+  wishId: string
+  finishedBy: string
+  finishedAt: string
+}
+
+export interface EventLog {
+  id: string
+  type: 'finish' | 'chipin'
+  wishId: string
+  actorName: string
+  amount?: number
+  createdAt: string
+}

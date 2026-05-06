@@ -1,8 +1,11 @@
-import { useState } from 'react'
-import type { Page, ViewMode, Wish } from '../types'
+import { useState, useEffect } from 'react'
+import type { Page, ViewMode, Wish, Finish } from '../types'
 import WishCard from '../components/WishCard'
 import AddWishModal from '../components/AddWishModal'
+import EventLogPanel from '../components/EventLogPanel'
 import { buildShareUrl } from '../lib/sharing'
+import { provider } from '../lib/providers'
+import { getOwnerToken, getCoordToken } from '../lib/storage'
 
 interface WishListProps {
   page: Page
@@ -15,8 +18,16 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
   const [showModal, setShowModal] = useState(false)
   const [editingWish, setEditingWish] = useState<Wish | null>(null)
   const [copied, setCopied] = useState(false)
+  const [finishes, setFinishes] = useState<Finish[]>([])
+  const [showLog, setShowLog] = useState(false)
 
   const canEdit = viewMode === 'owner'
+
+  // Fetch finishes for non-owners
+  useEffect(() => {
+    if (canEdit) return
+    provider.getFinishes(page.id).then(setFinishes).catch(() => {})
+  }, [page.id, canEdit])
 
   function handleAdd(data: Omit<Wish, 'id'>) {
     const wish: Wish = { ...data, id: crypto.randomUUID() }
@@ -36,6 +47,10 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
     onUpdate(page.wishes.filter(w => w.id !== id))
   }
 
+  function handleFinished(finish: Finish) {
+    setFinishes(prev => [...prev.filter(f => f.wishId !== finish.wishId), finish])
+  }
+
   async function handleShare() {
     const url = buildShareUrl(page.id)
     try {
@@ -48,6 +63,9 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
   }
 
   const displayName = page.personName.charAt(0).toUpperCase() + page.personName.slice(1)
+  const logToken = canEdit
+    ? (getOwnerToken(page.id) ?? '')
+    : (getCoordToken(page.id) ?? '')
 
   return (
     <div className="min-h-dvh bg-gradient-to-br from-rose-50 via-fuchsia-50 to-sky-100">
@@ -66,12 +84,22 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
           </h1>
 
           {canEdit ? (
-            <button
-              onClick={handleShare}
-              className="px-3 py-1.5 rounded-xl bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 active:scale-95 transition-all shadow-sm shadow-purple-200"
-            >
-              {copied ? '✓ copied!' : 'share'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowLog(true)}
+                className="p-2 rounded-xl text-gray-500 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+                aria-label="Activity log"
+                title="Activity log"
+              >
+                📋
+              </button>
+              <button
+                onClick={handleShare}
+                className="px-3 py-1.5 rounded-xl bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 active:scale-95 transition-all shadow-sm shadow-purple-200"
+              >
+                {copied ? '✓ copied!' : 'share'}
+              </button>
+            </div>
           ) : (
             <div className="w-16" />
           )}
@@ -98,9 +126,12 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
               <WishCard
                 key={wish.id}
                 wish={wish}
+                pageId={page.id}
                 canEdit={canEdit}
+                finish={finishes.find(f => f.wishId === wish.id)}
                 onEdit={() => setEditingWish(wish)}
                 onDelete={() => handleDelete(wish.id)}
+                onFinished={handleFinished}
               />
             ))}
           </div>
@@ -135,6 +166,15 @@ export default function WishList({ page, viewMode, onUpdate, onBack }: WishListP
           initial={editingWish}
           onSave={handleEdit}
           onClose={() => setEditingWish(null)}
+        />
+      )}
+
+      {showLog && logToken && (
+        <EventLogPanel
+          pageId={page.id}
+          token={logToken}
+          wishes={page.wishes}
+          onClose={() => setShowLog(false)}
         />
       )}
     </div>

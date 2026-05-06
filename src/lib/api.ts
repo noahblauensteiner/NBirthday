@@ -1,4 +1,4 @@
-import type { Page, Claim, Wish } from '../types'
+import type { Page, Claim, Wish, Finish, EventLog } from '../types'
 
 const BASE = '/.netlify/functions'
 
@@ -82,4 +82,33 @@ export function deleteClaim(pageId: string, claimId: string): Promise<void> {
     'DELETE',
     `/claims?id=${encodeURIComponent(pageId)}&claimId=${encodeURIComponent(claimId)}`,
   )
+}
+
+export function getFinishes(pageId: string): Promise<Finish[]> {
+  return req('GET', `/finishes?id=${encodeURIComponent(pageId)}`)
+}
+
+export function createFinish(pageId: string, wishId: string, finishedBy: string): Promise<Finish> {
+  return req('POST', `/finishes?id=${encodeURIComponent(pageId)}`, { wishId, finishedBy })
+}
+
+export function deleteFinish(pageId: string, finishId: string): Promise<void> {
+  return req(
+    'DELETE',
+    `/finishes?id=${encodeURIComponent(pageId)}&finishId=${encodeURIComponent(finishId)}`,
+  )
+}
+
+export function getEvents(pageId: string, token: string): Promise<EventLog[]> {
+  return req(
+    'GET',
+    `/events?id=${encodeURIComponent(pageId)}&token=${encodeURIComponent(token)}`,
+  )
+}
+
+export function createEvent(
+  pageId: string,
+  event: { type: 'finish' | 'chipin'; wishId: string; actorName: string; amount?: number },
+): Promise<EventLog> {
+  return req('POST', `/events?id=${encodeURIComponent(pageId)}`, event)
 }

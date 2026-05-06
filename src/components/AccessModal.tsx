@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { hashPassword } from '../lib/crypto'
-import { verifyPassword, ApiError } from '../lib/api'
+import { provider, ProviderError } from '../lib/providers'
 import type { Page } from '../types'
 
 interface AccessModalProps {
@@ -25,7 +25,7 @@ export default function AccessModal({ page, onOwner, onFriend }: AccessModalProp
     setLoading(true)
     try {
       const hash = await hashPassword(trimmed)
-      const { valid } = await verifyPassword(page.id, hash)
+      const { valid } = await provider.verifyPassword(page.id, hash)
       setLoading(false)
       if (valid) {
         onOwner(hash)
@@ -34,7 +34,7 @@ export default function AccessModal({ page, onOwner, onFriend }: AccessModalProp
       }
     } catch (err) {
       setLoading(false)
-      if (err instanceof ApiError && err.status === 404) {
+      if (err instanceof ProviderError && err.status === 404) {
         setError('Page not found.')
       } else {
         setError('Could not verify — check your connection.')

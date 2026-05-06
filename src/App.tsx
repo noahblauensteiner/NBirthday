@@ -8,7 +8,7 @@ import ErrorScreen from './components/ErrorScreen'
 import PagePicker from './components/PagePicker'
 import { parseUrl } from './lib/sharing'
 import { getOwnerToken, saveOwnerToken, saveCoordToken } from './lib/storage'
-import { getPage, createPage, updatePage, verifyPassword, searchPages, ApiError } from './lib/api'
+import { provider, ProviderError } from './lib/providers'
 import type { Page, ViewMode, Wish } from './types'
 
 type PageResult = { id: string; personName: string; createdAt: string }
@@ -56,18 +56,22 @@ export default function App() {
     loadPageAndRoute(parsed.pageId)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function loadPageAndRoute(pageId: string) {
+  async function loadPageAndRoute(pageId: string, skipAutoLogin = false) {
     setState({ mode: 'loading' })
     try {
-      const page = await getPage(pageId)
+      const page = await provider.getPage(pageId)
       window.history.replaceState({}, '', `/?p=${pageId}`)
 
-      const ownerToken = getOwnerToken(pageId)
-      if (ownerToken) {
-        const { valid } = await verifyPassword(pageId, ownerToken)
-        if (valid) {
-          setState({ mode: 'wishlist', page, viewMode: 'owner' })
-          return
+      // Auto-login only on direct ?p= URL loads — not when arriving via name search,
+      // so the owner can choose to view as a visitor after clicking back.
+      if (!skipAutoLogin) {
+        const ownerToken = getOwnerToken(pageId)
+        if (ownerToken) {
+          const { valid } = await provider.verifyPassword(pageId, ownerToken)
+          if (valid) {
+            setState({ mode: 'wishlist', page, viewMode: 'owner' })
+            return
+          }
         }
       }
 
@@ -79,7 +83,7 @@ export default function App() {
 
       setState({ mode: 'access-check', page })
     } catch (err) {
-      if (err instanceof ApiError && err.status === 404) {
+      if (err instanceof ProviderError && err.status === 404) {
         setState({ mode: 'error', message: 'This birthday page no longer exists.' })
       } else {
         setState({ mode: 'error', message: 'Could not load the page. Check your connection.' })
@@ -90,11 +94,11 @@ export default function App() {
   async function handleNameSubmit(name: string) {
     setState({ mode: 'loading' })
     try {
-      const { pages } = await searchPages(name)
+      const pages = await provider.searchPages(name)
       if (pages.length === 0) {
         setState({ mode: 'first-celebrator', pendingName: name })
       } else if (pages.length === 1) {
-        await loadPageAndRoute(pages[0].id)
+        await loadPageAndRoute(pages[0].id, true)
       } else {
         setState({ mode: 'picker', results: pages })
       }
@@ -106,11 +110,11 @@ export default function App() {
   async function handleCreateSession(name: string, passwordHash: string) {
     setState({ mode: 'loading' })
     try {
-      const { id, coordToken } = await createPage(name, passwordHash)
+      const { id, coordToken } = await provider.createPage(name, passwordHash)
       saveOwnerToken(id, passwordHash)
       saveCoordToken(id, coordToken)
       window.history.replaceState({}, '', `/?p=${id}`)
-      const page = await getPage(id)
+      const page = await provider.getPage(id)
       setState({ mode: 'wishlist', page, viewMode: 'owner' })
     } catch {
       setState({ mode: 'error', message: 'Could not create birthday page. Try again.' })
@@ -140,12 +144,12 @@ export default function App() {
     )
 
     try {
-      const updated = await updatePage(page.id, ownerToken, { wishes: updatedWishes })
+      const updated = await provider.updatePage(page.id, ownerToken, { wishes: updatedWishes })
       setState(prev =>
         prev.mode === 'wishlist' ? { ...prev, page: updated } : prev,
       )
     } catch (err) {
-      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+      if (err instanceof ProviderError && (err.status === 401 || err.status === 403)) {
         setState({ mode: 'access-check', page })
       }
     }
@@ -166,7 +170,7 @@ export default function App() {
     return (
       <PagePicker
         results={state.results}
-        onSelect={id => loadPageAndRoute(id)}
+        onSelect={id => loadPageAndRoute(id, true)}
         onBack={handleBack}
       />
     )
