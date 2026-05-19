@@ -26,7 +26,7 @@ export default function FirstCelebratorModal({ name, onCreate, onBack }: FirstCe
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
+      <div className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
         {/* Top accent */}
         <div className="bg-gradient-to-r from-fuchsia-400 to-purple-500 px-6 py-5 text-center">
           <span className="text-4xl">🎈</span>
@@ -36,9 +36,9 @@ export default function FirstCelebratorModal({ name, onCreate, onBack }: FirstCe
         </div>
 
         <div className="px-6 py-5">
-          <p className="text-gray-500 text-sm leading-relaxed text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed text-center">
             No wishes set yet. If you're {displayName}, pick a{' '}
-            <span className="text-purple-600 font-medium">birthday password</span> — one joyful
+            <span className="text-purple-600 dark:text-purple-400 font-medium">birthday password</span> — one joyful
             natural word only you'd choose. Friends who don't know it can still see your wishes.
           </p>
 
@@ -51,9 +51,9 @@ export default function FirstCelebratorModal({ name, onCreate, onBack }: FirstCe
                 onChange={e => setWord(e.target.value.replace(/\s+/g, ''))}
                 placeholder="sunshine · rainbow · blossom"
                 maxLength={30}
-                className="w-full bg-fuchsia-50 border border-fuchsia-200 rounded-2xl px-4 py-3 text-center text-lg text-purple-900 placeholder:text-purple-300 placeholder:text-base focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all tracking-wide"
+                className="w-full bg-fuchsia-50 dark:bg-purple-950/30 border border-fuchsia-200 dark:border-purple-800 rounded-2xl px-4 py-3 text-center text-lg text-purple-900 dark:text-purple-200 placeholder:text-purple-300 dark:placeholder:text-purple-700 placeholder:text-base focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all tracking-wide"
               />
-              <p className="mt-1.5 text-center text-xs text-gray-400">
+              <p className="mt-1.5 text-center text-xs text-gray-400 dark:text-gray-600">
                 one word · no spaces · you'll use this to edit later
               </p>
             </div>
@@ -61,7 +61,7 @@ export default function FirstCelebratorModal({ name, onCreate, onBack }: FirstCe
             <button
               type="submit"
               disabled={!singleWord || loading}
-              className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium tracking-wide hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200"
+              className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium tracking-wide hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200 dark:shadow-purple-950"
             >
               {loading ? '✨ setting up…' : 'start celebrating →'}
             </button>
@@ -69,7 +69,7 @@ export default function FirstCelebratorModal({ name, onCreate, onBack }: FirstCe
 
           <button
             onClick={onBack}
-            className="mt-3 w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="mt-3 w-full py-2 text-sm text-gray-400 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
           >
             I'm just a friend — go back
           </button>

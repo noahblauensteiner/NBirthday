@@ -34,7 +34,7 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
   if (step === 'choose') {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/30 backdrop-blur-sm">
-        <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
           <div className="bg-gradient-to-r from-sky-400 to-purple-500 px-6 py-5 text-center">
             <span className="text-4xl">🎂</span>
             <p className="mt-2 text-white font-semibold text-base">
@@ -43,20 +43,20 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
           </div>
 
           <div className="px-6 py-5 space-y-3">
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-gray-500 dark:text-gray-400 text-sm">
               Are you {displayName}?
             </p>
 
             <button
               onClick={() => setStep('password')}
-              className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-200"
+              className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all shadow-md shadow-purple-200 dark:shadow-purple-950"
             >
               Yes, I'm {displayName}! 🎉
             </button>
 
             <button
               onClick={onFriend}
-              className="w-full py-3.5 rounded-2xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 active:scale-95 transition-all"
+              className="w-full py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 transition-all"
             >
               I'm here as a friend 💌
             </button>
@@ -68,7 +68,7 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/30 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
+      <div className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden animate-fade-slide-up">
         <div className="bg-gradient-to-r from-sky-400 to-purple-500 px-6 py-5 text-center">
           <span className="text-4xl">🔑</span>
           <p className="mt-2 text-white font-semibold text-base">
@@ -77,7 +77,7 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
         </div>
 
         <div className="px-6 py-5">
-          <p className="text-center text-gray-500 text-sm mb-5">
+          <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-5">
             One joyful word only {displayName} would know
           </p>
 
@@ -89,18 +89,18 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
               onChange={e => { setWord(e.target.value.replace(/\s+/g, '')); setError('') }}
               placeholder="your secret word…"
               maxLength={30}
-              className="w-full bg-fuchsia-50 border border-fuchsia-200 rounded-2xl px-4 py-3 text-center text-lg text-purple-900 placeholder:text-purple-300 placeholder:text-base focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all tracking-wide"
+              className="w-full bg-fuchsia-50 dark:bg-purple-950/30 border border-fuchsia-200 dark:border-purple-800 rounded-2xl px-4 py-3 text-center text-lg text-purple-900 dark:text-purple-200 placeholder:text-purple-300 dark:placeholder:text-purple-700 placeholder:text-base focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all tracking-wide"
             />
 
             {error && (
-              <p className="text-center text-sm text-rose-500">{error}</p>
+              <p className="text-center text-sm text-rose-500 dark:text-rose-400">{error}</p>
             )}
 
             {error ? (
               <button
                 type="button"
                 onClick={onFriend}
-                className="w-full py-3.5 rounded-2xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 active:scale-95 transition-all"
+                className="w-full py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 transition-all"
               >
                 continue as friend →
               </button>
@@ -108,7 +108,7 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
               <button
                 type="submit"
                 disabled={!word.trim() || loading}
-                className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200"
+                className="w-full py-3.5 rounded-2xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200 dark:shadow-purple-950"
               >
                 {loading ? '✨ checking…' : 'enter →'}
               </button>
@@ -117,7 +117,7 @@ export default function AccessModal({ session, onOwner, onFriend }: AccessModalP
 
           <button
             onClick={() => { setStep('choose'); setWord(''); setError('') }}
-            className="mt-3 w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="mt-3 w-full py-2 text-sm text-gray-400 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
           >
             ← back
           </button>

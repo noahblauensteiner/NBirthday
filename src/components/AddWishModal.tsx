@@ -44,19 +44,21 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
 
   const currentType = TYPES.find(t => t.type === type)!
 
+  const inputCls = 'w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-purple-400 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all outline-none'
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="text-lg font-semibold text-gray-800">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
             {initial ? 'Edit wish' : 'Add a wish'}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             ✕
           </button>
@@ -72,8 +74,8 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
                 onClick={() => setType(t.type)}
                 className={`flex flex-col items-center gap-1 py-3 rounded-2xl border-2 transition-all text-sm font-medium ${
                   type === t.type
-                    ? 'border-purple-400 bg-purple-50 text-purple-700'
-                    : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'
+                    ? 'border-purple-400 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                    : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
                 }`}
               >
                 <span className="text-xl">{t.emoji}</span>
@@ -90,7 +92,7 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             onChange={e => setTitle(e.target.value)}
             placeholder="What do you want? *"
             maxLength={80}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+            className={inputCls}
           />
 
           {/* Picture keyword */}
@@ -101,12 +103,12 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
               onChange={e => setPicture(e.target.value)}
               placeholder={currentType.picturePlaceholder}
               maxLength={40}
-              className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+              className={`${inputCls} pl-9 pr-20`}
             />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 text-base pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-600 text-base pointer-events-none">
               🖼️
             </span>
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300 pointer-events-none">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300 dark:text-gray-600 pointer-events-none">
               cover image
             </span>
           </div>
@@ -118,7 +120,7 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             placeholder="Any details? (optional)"
             maxLength={200}
             rows={2}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none resize-none"
+            className={`${inputCls} resize-none`}
           />
 
           {/* URL */}
@@ -127,7 +129,7 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             value={url}
             onChange={e => setUrl(e.target.value)}
             placeholder="Link (optional)"
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder:text-gray-300 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all outline-none"
+            className={inputCls}
           />
 
           {/* Actions */}
@@ -135,14 +137,14 @@ export default function AddWishModal({ initial, onSave, onClose }: AddWishModalP
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-500 font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="flex-1 py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200"
+              className="flex-1 py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-md shadow-purple-200 dark:shadow-purple-950"
             >
               {initial ? 'Save' : 'Add wish'}
             </button>

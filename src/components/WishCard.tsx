@@ -7,10 +7,10 @@ const TYPE_META: Record<WishType, {
   badge: string
   fallbackBg: string
 }> = {
-  gift:     { emoji: '🎁', label: 'Gift',     badge: 'bg-rose-50 text-rose-500',    fallbackBg: 'from-rose-100 to-pink-200' },
-  activity: { emoji: '🏃', label: 'Activity', badge: 'bg-emerald-50 text-emerald-600', fallbackBg: 'from-emerald-100 to-teal-200' },
-  party:    { emoji: '🎉', label: 'Party',    badge: 'bg-violet-50 text-violet-600', fallbackBg: 'from-violet-100 to-purple-200' },
-  dinner:   { emoji: '🍽️', label: 'Dinner',   badge: 'bg-orange-50 text-orange-500', fallbackBg: 'from-orange-100 to-amber-200' },
+  gift:     { emoji: '🎁', label: 'Gift',     badge: 'bg-rose-50 text-rose-500 dark:bg-rose-950/50 dark:text-rose-400',       fallbackBg: 'from-rose-100 to-pink-200 dark:from-rose-950 dark:to-pink-900' },
+  activity: { emoji: '🏃', label: 'Activity', badge: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400', fallbackBg: 'from-emerald-100 to-teal-200 dark:from-emerald-950 dark:to-teal-900' },
+  party:    { emoji: '🎉', label: 'Party',    badge: 'bg-violet-50 text-violet-600 dark:bg-violet-950/50 dark:text-violet-400',   fallbackBg: 'from-violet-100 to-purple-200 dark:from-violet-950 dark:to-purple-900' },
+  dinner:   { emoji: '🍽️', label: 'Dinner',   badge: 'bg-orange-50 text-orange-500 dark:bg-orange-950/50 dark:text-orange-400',  fallbackBg: 'from-orange-100 to-amber-200 dark:from-orange-950 dark:to-amber-900' },
 }
 
 interface WishCardProps {
@@ -26,7 +26,7 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
   const showImage = !!wish.imageUrl && !imgFailed
 
   return (
-    <div className="group relative bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
+    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-black/30 overflow-hidden flex flex-col">
       {/* Cover image / gradient */}
       <div className="aspect-square relative overflow-hidden flex-shrink-0">
         {showImage ? (
@@ -43,19 +43,19 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
           </div>
         )}
 
-        {/* Edit / delete overlay — top-right on hover */}
+        {/* Edit / delete overlay */}
         {canEdit && (
           <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={onEdit}
-              className="w-8 h-8 rounded-xl bg-white/90 backdrop-blur-sm text-sm shadow flex items-center justify-center hover:bg-white transition-colors"
+              className="w-8 h-8 rounded-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-sm shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-900 transition-colors"
               aria-label="Edit"
             >
               ✏️
             </button>
             <button
               onClick={onDelete}
-              className="w-8 h-8 rounded-xl bg-white/90 backdrop-blur-sm text-sm shadow flex items-center justify-center hover:bg-white transition-colors"
+              className="w-8 h-8 rounded-xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-sm shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-900 transition-colors"
               aria-label="Delete"
             >
               🗑️
@@ -69,7 +69,7 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
         <span className={`self-start text-xs font-medium px-2 py-0.5 rounded-full ${meta.badge}`}>
           {meta.emoji} {meta.label}
         </span>
-        <p className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-snug line-clamp-2">
           {wish.title}
         </p>
         {wish.url && (
@@ -77,7 +77,7 @@ export default function WishCard({ wish, canEdit, onEdit, onDelete }: WishCardPr
             href={wish.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-purple-400 hover:text-purple-600 transition-colors truncate"
+            className="text-xs text-purple-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors truncate"
           >
             🔗 link
           </a>

@@ -5,6 +5,7 @@ import FirstCelebratorModal from './components/FirstCelebratorModal'
 import AccessModal from './components/AccessModal'
 import { parseShareUrl } from './lib/sharing'
 import { loadSession, saveSession, getEditToken, saveEditToken } from './lib/storage'
+import { useDarkMode } from './lib/darkMode'
 import type { Session } from './types'
 
 type AppState =
@@ -27,6 +28,7 @@ function getInitialState(): AppState {
 
 export default function App() {
   const [state, setState] = useState<AppState>(getInitialState)
+  const [isDark, toggleDark] = useDarkMode()
 
   function handleNameSubmit(name: string) {
     const existing = loadSession(name)
@@ -36,7 +38,6 @@ export default function App() {
       return
     }
 
-    // Same device that already authenticated → skip modal
     const localToken = getEditToken(name)
     if (localToken && localToken === existing.passwordHash) {
       setState({ mode: 'wishlist', session: existing, canEdit: true })
@@ -75,13 +76,13 @@ export default function App() {
   }
 
   if (state.mode === 'landing') {
-    return <Landing onSubmit={handleNameSubmit} />
+    return <Landing onSubmit={handleNameSubmit} isDark={isDark} onToggleDark={toggleDark} />
   }
 
   if (state.mode === 'first-celebrator') {
     return (
       <>
-        <Landing onSubmit={handleNameSubmit} />
+        <Landing onSubmit={handleNameSubmit} isDark={isDark} onToggleDark={toggleDark} />
         <FirstCelebratorModal
           name={state.pendingName}
           onCreate={hash => handleCreateSession(state.pendingName, hash)}
@@ -94,7 +95,7 @@ export default function App() {
   if (state.mode === 'access-check') {
     return (
       <>
-        <Landing onSubmit={handleNameSubmit} />
+        <Landing onSubmit={handleNameSubmit} isDark={isDark} onToggleDark={toggleDark} />
         <AccessModal
           session={state.session}
           onOwner={() => handleOwnerAccess(state.session)}
@@ -110,6 +111,8 @@ export default function App() {
       canEdit={state.canEdit}
       onUpdate={handleSessionUpdate}
       onBack={handleBack}
+      isDark={isDark}
+      onToggleDark={toggleDark}
     />
   )
 }
